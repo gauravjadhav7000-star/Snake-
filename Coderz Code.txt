@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define N 10   // board size
+
+int board[N][N];
+int snakeX[100], snakeY[100];
+int length = 3;
+int foodX, foodY;
+
+void printBoard() {
+    system("cls"); // screen clear
+
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < N; j++) {
+
+            int isSnake = 0;
+            for(int k = 0; k < length; k++) {
+                if(snakeX[k] == i && snakeY[k] == j)
+                    isSnake = 1;
+            }
+
+            if(isSnake) printf("O ");
+            else if(i == foodX && j == foodY) printf("F ");
+            else printf(". ");
+        }
+        printf("\n");
+    }
+}
+
+void generateFood() {
+    foodX = rand() % N;
+    foodY = rand() % N;
+}
+
+int main() {
+    // initial snake
+    snakeX[0] = 5; snakeY[0] = 5;
+    snakeX[1] = 5; snakeY[1] = 4;
+    snakeX[2] = 5; snakeY[2] = 3;
+
+    char move;
+    generateFood();
+
+    while(1) {
+        printBoard();
+
+        printf("\nW = up, S = down, A = left, D = right\n");
+        printf("Enter move: ");
+        scanf(" %c", &move);
+
+        // move snake body
+        for(int i = length-1; i > 0; i--) {
+            snakeX[i] = snakeX[i-1];
+            snakeY[i] = snakeY[i-1];
+        }
+
+        // head movement
+        if(move == 'w') snakeX[0]--;
+        if(move == 's') snakeX[0]++;
+        if(move == 'a') snakeY[0]--;
+        if(move == 'd') snakeY[0]++;
+
+        // boundary check
+        if(snakeX[0] < 0 || snakeX[0] >= N || snakeY[0] < 0 || snakeY[0] >= N) {
+            printf("\nGAME OVER! Wall hit.\n");
+            break;
+        }
+
+        // food eat logic
+        if(snakeX[0] == foodX && snakeY[0] == foodY) {
+            length++;
+            generateFood();
+        }
+    }
+
+    return 0;
+}
